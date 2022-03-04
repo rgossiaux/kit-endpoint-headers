@@ -1,40 +1,22 @@
-# create-svelte
+# Kit endpoint headers bug
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+* Clone the repo and run `npm install`
+* Run `node src/server/app.cjs` to start the express backend server on port 5050. It will print out the headers of incoming requests.
+* Run `npm run dev` to start kit
+* Open the kit home page.
 
-## Creating a project
+The express server will first print out the headers for the server-side request and you will see that they don't correspond to the original request from your browser. For me they only have this:
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm init svelte@next
-
-# create a new project in my-app
-npm init svelte@next my-app
+```
+{
+  accept: '*/*',
+  'accept-encoding': 'gzip,deflate,br',
+  connection: 'close',
+  'user-agent': 'node-fetch',
+  host: 'localhost:5050'
+}
 ```
 
-> Note: the `@next` is temporary
+The same `fetch` will also be performed on the client in `onMount`, for comparison, so you will see a second set of headers from the client-side request.
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+For further illustration, the kit endpoint will set the session cookie `hello=world`. If you refresh you will see that it doesn't make it over to the express server either.
